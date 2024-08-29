@@ -65,32 +65,31 @@ def main():
     ## About the Data to be Filled
 
     - **Pregnancies**: This feature represents the number of times the individual has been pregnant.
-      - **Range**: 0 to any positive integer (0+).
+      - **Range**: 0 to any positive integer.
     
-    - **Glucose**: Plasma glucose concentration measured after 2 hours in an oral glucose tolerance test.
+    - **Glucose**: Plasma glucose concentration measured after 2 hours in an oral glucose tolerance test(mg/dL).
       - **Range**: 0 to 300.
     
     - **BloodPressure**: Diastolic blood pressure in millimeters of mercury (mm Hg).
       - **Range**: 0 to 200.
     
-    - **SkinThickness**: Triceps skin fold thickness in millimeters.
+    - **SkinThickness**: Triceps skin fold thickness (mm).
       - **Range**: 0 to any positive value (0+).
     
-    - **Insulin**: 2-hour serum insulin level in micro units per milliliter (mu U/ml).
+    - **Insulin**: 2-hour serum insulin level in micro units per milliliter (mcU/ml).
       - **Range**: 0 to any positive value.
     
-    - **BMI (Body Mass Index)**: Calculated as weight in kilograms divided by the square of height in meters.
+    - **BMI (Body Mass Index)**: Calculated as weight in kg divided by the square of height in m.
       - **Range**: 9 to 72.
     
     - **Diabetes Pedigree Function**: A score that indicates the likelihood of diabetes based on family history.
       - **Range**: 0.0 to 3.0.
     
     - **Age**: The age of the individual in years.
-      - **Range**: 0 to any positive value (0+).
+      - **Range**: 0 to any positive value.
     
     """)
     
 if __name__ == '__main__':
     main()
-    
     

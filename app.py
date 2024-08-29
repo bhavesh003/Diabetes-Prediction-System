@@ -2,94 +2,73 @@ import numpy as np
 import pickle
 import streamlit as st
 
-# loading the saved model 
-loaded_model = pickle.load(open("model/trained_model.pkl",'rb'))
+# Load the saved model
+loaded_model = pickle.load(open("model/trained_model.pkl", 'rb'))
 
-# creating a function for prediction 
-
+# Function for prediction
 def diabetes_prediction(input_data):
+    # Convert input data to numpy array and reshape it
+    input_data_array = np.asarray(input_data, dtype=np.float64).reshape(1, -1)
     
-    # changing data to numpy array 
-    input_data_array = np.asarray(input_data)
+    # Make prediction
+    result = loaded_model.predict(input_data_array)
     
-    # reshape the array as we are predicting for one instance
-    input_data_reshaped =  input_data_array.reshape(1,-1)
-    
-    result = loaded_model.predict(input_data_reshaped)
-    print("The prediction is : ",result)
-    
-    if (result[0] == 1):
-        return "The Person is Diabetic"        
+    if result[0] == 1:
+        return "The Person is Diabetic"
     else:
         return "The Person is not Diabetic"
 
+# Main function for Streamlit app
 def main():
-    # giving a title 
-    st.title('Diabetes Predictior')
+    # Set title
+    st.title('Diabetes Prediction Application')
     
-    # getting the input data from input user
+    st.markdown("""
+    ### Please provide the following details to predict diabetes:
+    """)
     
-    Pregnancies = st.text_input("Number of Pregnancies : ")
-    Glucose = st.text_input("Glucose level : ")
-    BloodPressure = st.text_input("Blood Pressure value: ")
-    SkinThickness = st.text_input("Measure of Skin Thickness : ")
-    Insulin = st.text_input("Insulin level : ")
-    BMI = st.text_input("BMI value : ")
-    DiabetesPedigreeFunction = st.text_input("Diabetes Pedigree Function value : ")
-    Age= st.text_input("Age of person : ")
+    # Input fields with validation
+    Pregnancies = st.number_input("Number of Pregnancies:", min_value=0, max_value=20, step=1, format="%d")
+    Glucose = st.number_input("Glucose Level (mg/dL):", min_value=0, max_value=300, step=1, format="%d")
+    BloodPressure = st.number_input("Blood Pressure (mm Hg):", min_value=0, max_value=200, step=1, format="%d")
+    SkinThickness = st.number_input("Skin Thickness (mm):", min_value=0, max_value=100, step=1, format="%d")
+    Insulin = st.number_input("Insulin Level (mcU/mL):", min_value=0, max_value=900, step=1, format="%d")
+    BMI = st.number_input("BMI:", min_value=0.0, max_value=70.0, step=0.1, format="%.1f")
+    DiabetesPedigreeFunction = st.number_input("Diabetes Pedigree Function:", min_value=0.0, max_value=3.0, step=0.01, format="%.2f")
+    Age = st.number_input("Age (years):", min_value=0, max_value=120, step=1, format="%d")
     
+    # Prediction button and result display
+    diagnosis = ''
     
-    # code for prediction 
-    diagnosis = '' # null string 
+    if st.button('Diagnosis Test Result'):
+        if any(field == '' for field in [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]):
+            st.warning("Please fill in all the fields correctly!")
+        else:
+            diagnosis = diabetes_prediction([Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age])
+            st.success(diagnosis)
     
-    # creating a button for prediction 
-    
-    if st.button('Diagonasis Test Result'):
-        diagnosis = diabetes_prediction([Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age ])
-        
-    st.success(diagnosis)
+    # Display sample input for users
+    st.markdown("***")
+    st.markdown("""
+    ### Sample Data:
+    - **Non-Diabetic Person**: 4, 110, 92, 32, 88, 31.0, 0.248, 26
+    - **Diabetic Person**: 6, 150, 80, 35, 150, 32.0, 0.6, 50
+    """)
     
     st.markdown("***")
     
+    # Explanation of data fields
     st.markdown("""
-    
-    ## Sample Data to fill: 
-    
-    - **Non Diabetic Person** : 4   110 92  32  88  31  0.248  26
-    - **Diabetic Person** :   6      150     80     35    150    32    0.6    50
-    
-    """)
-    
-    st.markdown("""
-    
-    ## About the Data to be Filled
-
-    - **Pregnancies**: This feature represents the number of times the individual has been pregnant.
-      - **Range**: 0 to any positive integer.
-    
-    - **Glucose**: Plasma glucose concentration measured after 2 hours in an oral glucose tolerance test(mg/dL).
-      - **Range**: 0 to 300.
-    
-    - **BloodPressure**: Diastolic blood pressure in millimeters of mercury (mm Hg).
-      - **Range**: 0 to 200.
-    
-    - **SkinThickness**: Triceps skin fold thickness (mm).
-      - **Range**: 0 to any positive value (0+).
-    
-    - **Insulin**: 2-hour serum insulin level in micro units per milliliter (mcU/ml).
-      - **Range**: 0 to any positive value.
-    
-    - **BMI (Body Mass Index)**: Calculated as weight in kg divided by the square of height in m.
-      - **Range**: 9 to 72.
-    
-    - **Diabetes Pedigree Function**: A score that indicates the likelihood of diabetes based on family history.
-      - **Range**: 0.0 to 3.0.
-    
-    - **Age**: The age of the individual in years.
-      - **Range**: 0 to any positive value.
-    
+    ### Explanation of Input Fields:
+    - **Pregnancies**: Number of times pregnant (0 to 20).
+    - **Glucose**: Plasma glucose concentration (0 to 300 mg/dL).
+    - **Blood Pressure**: Diastolic blood pressure (0 to 200 mm Hg).
+    - **Skin Thickness**: Triceps skin fold thickness (0 to 100 mm).
+    - **Insulin**: 2-hour serum insulin (0 to 900 mcU/mL).
+    - **BMI**: Body Mass Index (0.0 to 70.0).
+    - **Diabetes Pedigree Function**: Likelihood of diabetes based on family history (0.0 to 3.0).
+    - **Age**: Age in years (0 to 120).
     """)
     
 if __name__ == '__main__':
     main()
-    

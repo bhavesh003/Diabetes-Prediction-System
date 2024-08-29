@@ -25,7 +25,7 @@ def diabetes_prediction(input_data):
 
 def main():
     # giving a title 
-    st.title('Diabetes Prediction Application')
+    st.title('Diabetes Predictior')
     
     # getting the input data from input user
     
@@ -58,7 +58,7 @@ def main():
     - **Non Diabetic Person** : 4   110 92  32  88  31  0.248  26
     - **Diabetic Person** :   6      150     80     35    150    32    0.6    50
     
-      """)
+    """)
     
     st.markdown("""
     

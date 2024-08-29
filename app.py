@@ -90,17 +90,6 @@ def main():
     
     """)
     
-    if st.button('Show Accuracy Report'):
-      st.write(f"Accuracy score of the testing data is: {testing_data_accuracy}")
-      st.write("Classification Report:")
-      st.text(classification_report(Y_test, X_test_prediction))
-      
-    report = classification_report(Y_test, X_test_prediction)
-    with open('accuracy_report.txt', 'w') as f:
-      f.write(report)
-
-
-    
 if __name__ == '__main__':
     main()
     

@@ -80,13 +80,4 @@ The project includes:
 
 ## 📈 Model Performance
 
-The stacking classifier achieved an **accuracy score** of approximately 90% on the testing set. Here's the classification report for the model:
-
-```
-               precision    recall  f1-score   support
-        0         0.92       0.89      0.91       160
-        1         0.88       0.92      0.90       140
-    accuracy                            0.90       300
-   macro avg       0.90       0.90      0.90       300
-weighted avg       0.90       0.90      0.90       300
-```
+The stacking classifier achieved an **accuracy score** of approximately 85% on the testing set.

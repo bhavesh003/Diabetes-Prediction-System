@@ -19,7 +19,7 @@ def diabetes_prediction(input_data):
 # Main function for Streamlit app
 def main():
     # Set the page configuration (title, icon)
-    st.set_page_config(page_title="Diabetes Prediction App", page_icon="🩺", layout="centered")
+    st.set_page_config(page_title="Diabetes Prediction Application", page_icon="🩺", layout="centered")
     
     # Title and header
     st.title('🩺 Diabetes Prediction Application')

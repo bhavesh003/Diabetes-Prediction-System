@@ -6,6 +6,7 @@ from PIL import Image
 # Load the saved model
 loaded_model = pickle.load(open("model/trained_model.pkl", 'rb'))
 
+
 # Function for prediction
 def diabetes_prediction(input_data):
     input_data_array = np.asarray(input_data, dtype=np.float64).reshape(1, -1)

@@ -1,10 +1,14 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.ensemble import StackingClassifier
 from imblearn.over_sampling import SMOTE
+import pickle
 
 # Load the dataset
 data = pd.read_csv('diabetes.csv')
@@ -25,36 +29,59 @@ scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-# Hyperparameter tuning for SVM
-param_grid = {
+# Model 1: Support Vector Machine with GridSearchCV
+param_grid_svm = {
     'C': [0.1, 1, 10, 100],
     'kernel': ['linear', 'rbf', 'poly'],
     'gamma': ['scale', 'auto'],
     'degree': [2, 3, 4]
 }
 
-grid_search = GridSearchCV(SVC(), param_grid, refit=True, verbose=3, cv=5)
-grid_search.fit(X_train, y_train)
+svm_grid = GridSearchCV(SVC(), param_grid_svm, refit=True, verbose=3, cv=5)
+svm_grid.fit(X_train, y_train)
 
-# Best model from grid search
-best_model = grid_search.best_estimator_
+# Model 2: Random Forest Classifier with GridSearchCV
+param_grid_rf = {
+    'n_estimators': [50, 100, 200],
+    'max_depth': [5, 10, 20],
+    'min_samples_split': [2, 5, 10]
+}
 
-# Save the trained model
-import pickle
-with open('model/trained_model.pkl', 'wb') as file:
-    pickle.dump(best_model, file)
+rf_grid = GridSearchCV(RandomForestClassifier(), param_grid_rf, refit=True, verbose=3, cv=5)
+rf_grid.fit(X_train, y_train)
+
+# Model 3: Logistic Regression with GridSearchCV
+param_grid_lr = {
+    'C': [0.01, 0.1, 1, 10, 100]
+}
+
+lr_grid = GridSearchCV(LogisticRegression(max_iter=1000), param_grid_lr, refit=True, verbose=3, cv=5)
+lr_grid.fit(X_train, y_train)
+
+# Stacking: Combine SVM, Random Forest, and Logistic Regression
+estimators = [
+    ('svm', svm_grid.best_estimator_),
+    ('rf', rf_grid.best_estimator_),
+    ('lr', lr_grid.best_estimator_)
+]
+
+stacking_model = StackingClassifier(estimators=estimators, final_estimator=LogisticRegression())
+stacking_model.fit(X_train, y_train)
 
 # Make predictions on the test set
-y_pred = best_model.predict(X_test)
+y_pred_stacked = stacking_model.predict(X_test)
 
 # Evaluate the model
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Best Parameters: {grid_search.best_params_}")
-print(f"Accuracy score of the testing data is: {accuracy}")
-print("\nClassification Report:")
-print(classification_report(y_test, y_pred))
+accuracy_stacked = accuracy_score(y_test, y_pred_stacked)
+print(f"Accuracy of Stacking Model: {accuracy_stacked}")
+print("\nClassification Report for Stacking Model:")
+print(classification_report(y_test, y_pred_stacked))
 
-# Inspect the model
+# Save the best model (stacking model)
+with open('model/trained_model.pkl', 'wb') as file:
+    pickle.dump(stacking_model, file)
+
+# Inspect the saved model
 def inspect_model(file_path):
     with open(file_path, 'rb') as file:
         model = pickle.load(file)

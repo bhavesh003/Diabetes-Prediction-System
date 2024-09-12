@@ -1,6 +1,3 @@
-Here's an updated version of your `README.md` file:
-
-```markdown
 # 🩺 Diabetes Prediction System
 
 This project is a machine learning-based web application that predicts whether a person is diabetic or not, based on medical parameters such as glucose levels, blood pressure, insulin levels, and more. The model was trained using a combination of Support Vector Machine (SVM), Random Forest, and Logistic Regression via stacking for better accuracy. The application is built using **Streamlit** for the front-end and Python for the back-end model training.
@@ -10,7 +7,6 @@ This project is a machine learning-based web application that predicts whether a
 The Diabetes Prediction System uses data from the Pima Indians Diabetes Database. The data is processed and cleaned, and the model predicts diabetes based on various medical attributes.
 
 The project includes:
-
 - **Data Preprocessing**: Handling class imbalance using **SMOTE** and feature scaling.
 - **Modeling**: A Stacking Classifier that combines SVM, Random Forest, and Logistic Regression models to improve prediction accuracy.
 - **Web App**: A user-friendly interface built with **Streamlit** where users can input their medical data and get a prediction result (whether they are diabetic or not).
@@ -38,19 +34,6 @@ The project includes:
 - **Pandas & NumPy**: For data preprocessing and manipulation.
 - **Plotly**: For creating interactive charts and visualizations.
 - **LIME**: For model interpretability.
-
-## 📂 Project Structure
-
-```
-├── model/
-│   └── trained_model.pkl      # Saved trained model
-├── diabetes.csv               # Dataset file
-├── app.py                     # Streamlit app script
-├── train_diabetes_model.py     # Model training script
-├── requirements.txt           # Python dependencies
-├── README.md                  # Project documentation
-└── diabetes_banner.png        # Optional banner image for the app UI
-```
 
 ## ⚙️ Installation
 
@@ -91,8 +74,6 @@ The stacking classifier achieved an **accuracy score** of approximately 85% on t
 
 ## 📝 Disclaimer
 
-**Disclaimer:** The predictions made by this app are based on a machine learning model trained on specific datasets and may not fully reflect your individual health status. The results are not guaranteed to be accurate and should not be solely relied upon for making health decisions. While we strive to provide useful information, the app may not always be correct due to the limitations of the dataset and model used. Therefore, this application is not intended to replace professional medical advice, diagnosis, or treatment. Always consult your physician or other qualified health provider with any questions you may have regarding a medical condition. Please do not make health decisions based solely on the results from this app. We encourage you to seek professional medical advice and care.
+**Disclaimer:** The predictions made by this app are based on a machine learning model trained on specific datasets and may not fully reflect your individual health status. The results are not guaranteed to be accurate and should not be solely relied upon for making health decisions. While we strive to provide useful information, the app may not always be correct due to the limitations of the dataset and model used. Therefore, this application is not intended to replace professional medical advice, diagnosis, or treatment. Always consult your physician or other qualified health provider with any questions you may have regarding a medical condition. Please do not make health decisions based solely on the results of this app. We encourage you to seek professional medical advice and care.
 
 ```
-
-Feel free to customize any section to better fit your project’s specifics or preferences!

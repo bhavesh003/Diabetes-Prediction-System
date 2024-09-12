@@ -49,11 +49,11 @@ y_pred = best_model.predict(X_test)
 
 # Generate accuracy score
 accuracy = accuracy_score(y_test, y_pred)
-#print(f"Best Parameters: {grid_search.best_params_}")
+print(f"Best Parameters: {grid_search.best_params_}")
 print(f"Accuracy score of the testing data is: {accuracy}")
 
 # Generate classification report
 report = classification_report(y_test, y_pred)
 
-#print("\nClassification Report:")
-#print(report)
+print("\nClassification Report:")
+print(report)

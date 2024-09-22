@@ -17,7 +17,7 @@ data = pd.read_csv('diabetes.csv')
 X = data.drop(columns='Outcome', axis=1)
 y = data['Outcome']
 
-# Handle class imbalance using SMOTE
+# Handle class imbalance using SMOTE Synthetic Minority Over Sampling Technique
 smote = SMOTE(random_state=42)
 X_resampled, y_resampled = smote.fit_resample(X, y)
 
@@ -34,11 +34,13 @@ param_grid_svm = {
     'C': [0.1, 1, 10, 100],
     'kernel': ['linear', 'rbf', 'poly'],
     'gamma': ['scale', 'auto'],
-    'degree': [2, 3, 4]
+    'degree': [2, 3, 4],
+    'probability': [True]  # Ensure probability is enabled
 }
 
-svm_grid = GridSearchCV(SVC(), param_grid_svm, refit=True, verbose=3, cv=5)
+svm_grid = GridSearchCV(SVC(probability=True), param_grid_svm, refit=True, verbose=3, cv=5)
 svm_grid.fit(X_train, y_train)
+
 
 # Model 2: Random Forest Classifier with GridSearchCV
 param_grid_rf = {

@@ -1,12 +1,11 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, StackingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
-from sklearn.ensemble import StackingClassifier
 from imblearn.over_sampling import SMOTE
 import pickle
 
@@ -17,7 +16,7 @@ data = pd.read_csv('diabetes.csv')
 X = data.drop(columns='Outcome', axis=1)
 y = data['Outcome']
 
-# Handle class imbalance using SMOTE Synthetic Minority Over Sampling Technique
+# Handle class imbalance using SMOTE
 smote = SMOTE(random_state=42)
 X_resampled, y_resampled = smote.fit_resample(X, y)
 
@@ -40,7 +39,6 @@ param_grid_svm = {
 
 svm_grid = GridSearchCV(SVC(probability=True), param_grid_svm, refit=True, verbose=3, cv=5)
 svm_grid.fit(X_train, y_train)
-
 
 # Model 2: Random Forest Classifier with GridSearchCV
 param_grid_rf = {
@@ -70,27 +68,27 @@ estimators = [
 stacking_model = StackingClassifier(estimators=estimators, final_estimator=LogisticRegression())
 stacking_model.fit(X_train, y_train)
 
-# Make predictions on the test set
-y_pred_stacked = stacking_model.predict(X_test)
-
-# Evaluate the model
-accuracy_stacked = accuracy_score(y_test, y_pred_stacked)
-print(f"Accuracy of Stacking Model: {accuracy_stacked}")
-print("\nClassification Report for Stacking Model:")
-print(classification_report(y_test, y_pred_stacked))
-
 # Save the best model (stacking model)
 with open('model/trained_model.pkl', 'wb') as file:
     pickle.dump(stacking_model, file)
 
-# Inspect the saved model
-def inspect_model(file_path):
+# Function to evaluate the model
+def evaluate_model(model, X_test, y_test):
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    print(f"Accuracy of the model: {accuracy}")
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred))
+
+# Load the saved model and evaluate it
+def inspect_and_evaluate_model(file_path, X_test, y_test):
     with open(file_path, 'rb') as file:
         model = pickle.load(file)
     print(f"Model type: {type(model)}\n")
     print(f"Model Parameters:\n {model.get_params()}\n")
-    sample_data = X_test[0].reshape(1, -1)
-    print(f"Prediction for the sample data: {model.predict(sample_data)}")
+    
+    # Evaluate the model
+    evaluate_model(model, X_test, y_test)
 
-# Inspect the saved model
-inspect_model('model/trained_model.pkl')
+# Inspect and evaluate the saved model
+inspect_and_evaluate_model('model/trained_model.pkl', X_test, y_test)

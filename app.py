@@ -18,7 +18,7 @@ def load_training_data():
 # Create LIME explainer
 def get_lime_explainer(X_train):
     explainer = LimeTabularExplainer(
-        training_data=np.array(X_train),
+        training_data=X_train,
         feature_names=['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age'],
         mode='classification'
     )
@@ -26,8 +26,13 @@ def get_lime_explainer(X_train):
 
 # Explain the prediction with LIME
 def explain_with_lime(model, explainer, instance):
-    instance = np.array(instance).reshape(1, -1)  # Ensure it's 2D
-    explanation = explainer.explain_instance(instance[0], model.predict_proba)
+    try:
+        # Try using predict_proba for LIME explanation
+        explanation = explainer.explain_instance(instance[0], model.predict_proba)
+    except AttributeError:
+        # If predict_proba is not available, fallback to predict
+        st.warning("The model does not support probability prediction. Falling back to 'predict'.")
+        explanation = explainer.explain_instance(instance[0], model.predict)
     return explanation
 
 # Predict diabetes based on user input and get LIME explanation
@@ -36,14 +41,18 @@ def diabetes_prediction(inputs):
     inputs_array = np.array(inputs).reshape(1, -1)
     
     # Make prediction
-    prediction = model.predict(inputs_array)
+    try:
+        prediction_proba = model.predict_proba(inputs_array)
+        prediction = np.argmax(prediction_proba, axis=1)  # Class with highest probability
+    except AttributeError:
+        prediction = model.predict(inputs_array)
     
     # Load training data and get explainer
     X_train = load_training_data()  
     explainer = get_lime_explainer(X_train)
     
     # Get LIME explanation for the prediction
-    explanation = explain_with_lime(model, explainer, inputs)
+    explanation = explain_with_lime(model, explainer, inputs_array)
     
     return prediction, explanation
 
@@ -112,22 +121,21 @@ def get_personalized_suggestions(Glucose, BMI, Age):
         suggestions += "- **Elevated BMI (Overweight)**: Consider exercise and healthy eating to reduce weight.\n"
     
     if Age > 60:
-        suggestions += "- **Age factor**: As age increases, its important to maintain regular health check-ups and stay active.\n"
+        suggestions += "- **Age factor**: As age increases, it's important to maintain regular health check-ups and stay active.\n"
     elif Age > 45:
         suggestions += "- **Middle age**: Monitor health regularly and maintain a balanced lifestyle to reduce risk of diabetes.\n"
 
     return suggestions
 
-
 def disclaimer():
-    st.markdown("""
-    **Disclaimer:**
-    The predictions made by this app are based on a machine learning model trained on specific datasets and may not fully reflect your individual health status. The results are not guaranteed to be accurate and should not be solely relied upon for making health decisions. 
+    with st.expander("📜 Disclaimer", expanded=False):  # The user can expand/collapse this section
+        st.markdown(""" 
+        The predictions made by this app are based on a machine learning model trained on specific datasets and may not fully reflect your individual health status. The results are not guaranteed to be accurate and should not be solely relied upon for making health decisions. 
 
-    While we strive to provide useful information, the app may not always be correct due to the limitations of the dataset and model used. Therefore, this application is not intended to replace professional medical advice, diagnosis, or treatment. Always consult your physician or other qualified health provider with any questions you may have regarding a medical condition. 
+        While we strive to provide useful information, the app may not always be correct due to the limitations of the dataset and model used. Therefore, this application is not intended to replace professional medical advice, diagnosis, or treatment. Always consult your physician or other qualified health provider with any questions you may have regarding a medical condition. 
 
-    Please do not make health decisions based solely on the results from this app. We encourage you to seek professional medical advice and care. 
-    """)
+        Please do not make health decisions based solely on the results from this app. We encourage you to seek professional medical advice and care. 
+        """)
 
 # Modify main function to include risk classification and personalized suggestions
 def main():
@@ -149,16 +157,17 @@ def main():
     col1, col2 = st.columns(2)
 
     with col1:
-        Pregnancies = st.slider("Select the number of pregnancies", min_value=0, max_value=20, step=1, key="pregnancies")
-        Glucose = st.slider("Select glucose level", min_value=0, max_value=300, step=1, key="glucose")
-        BloodPressure = st.slider("Select blood pressure", min_value=0, max_value=200, step=1, key="blood_pressure")
-        SkinThickness = st.slider("Select skin thickness", min_value=0, max_value=100, step=1, key="skin_thickness")
+        Pregnancies = st.slider("Select the number of pregnancies", min_value=0, max_value=20, step=1, key="pregnancies", help="Total number of pregnancies the patient has had.")
+        Glucose = st.slider("Select glucose level", min_value=0, max_value=300, step=1, key="glucose", help="Plasma glucose concentration a 2 hours in an oral glucose tolerance test.")
+        BloodPressure = st.slider("Select blood pressure", min_value=0, max_value=200, step=1, key="blood_pressure", help="Diastolic blood pressure (mm Hg).")
+        SkinThickness = st.slider("Select skin thickness", min_value=0, max_value=100, step=1, key="skin_thickness", help="Triceps skin fold thickness (mm).")
 
     with col2:
-        Insulin = st.slider("Select insulin level", min_value=0, max_value=900, step=1, key="insulin")
-        BMI = st.slider("Select BMI", min_value=0.0, max_value=70.0, value=0.0, step=0.1, key="bmi")
-        DiabetesPedigreeFunction = st.slider("Select diabetes pedigree function", min_value=0.0, max_value=3.0, value=0.0, step=0.01, key="diabetes_pedigree")
-        Age = st.slider("Select age", min_value=0, max_value=120, step=1, key="age")
+        Insulin = st.slider("Select insulin level", min_value=0, max_value=900, step=1, key="insulin", help="2-Hour serum insulin (mu U/ml).")
+        BMI = st.slider("Select BMI", min_value=0.0, max_value=70.0, value=0.0, step=0.1, key="bmi", help="Body mass index (weight in kg/(height in m)^2).")
+        DiabetesPedigreeFunction = st.slider("Select diabetes pedigree function", min_value=0.0, max_value=3.0, value=0.0, step=0.01, key="diabetes_pedigree", help="Diabetes pedigree function (a function which scores the likelihood of diabetes based on family history).")
+        Age = st.slider("Select age", min_value=0, max_value=120, step=1, key="age", help="Age (years).")
+
 
     # Prediction button and result display
     if st.button('🔍 Get Diagnosis'):
@@ -182,62 +191,27 @@ def main():
 
             # Provide personalized suggestions based on the user inputs
             suggestions = get_personalized_suggestions(Glucose, BMI, Age)
-            if suggestions:  # Only display if there are suggestions
-                st.markdown("### Personalized Health Suggestions:")
+            if suggestions:
+                # Only display if there are suggestions
+                st.markdown("### Suggestions:")
                 st.markdown(suggestions)
-
-            st.markdown("---")
-
-            st.markdown("### Analysis of Prediction:")
-            exp_list = explanation.as_list()
-
-            # Create a Plotly bar chart for the explanation
-            features = [x[0] for x in exp_list]
-            weights = [x[1] for x in exp_list]
-            total_weight = sum([abs(w) for w in weights])
-
-            percentages = [(abs(w) / total_weight) * 100 for w in weights]
-
-            fig = go.Figure([go.Bar(x=features, y=percentages, text=[f'{p:.2f}%' for p in percentages],hoverinfo='text', marker=dict(color='rgb(26, 118, 255)'))])
-
-            fig.update_layout(
-                xaxis_title='Features',
-                yaxis_title='Contribution Percentage',
-                template='plotly_white',
-                hovermode='closest',
-                height=480,
-                margin=dict(l=40, r=40, t=40, b=40)
-            )
             
-            st.plotly_chart(fig)
+            # Display LIME explanation as a pie chart
+            feature_importance = explanation.as_list()
+            feature_names, feature_values = zip(*feature_importance)
 
-            st.markdown("---")
+            # Normalize the values to be positive (since pie charts only show positive values)
+            normalized_values = [abs(val) for val in feature_values]
+
+            # Create pie chart for feature importance
+            fig_exp = go.Figure(data=[go.Pie(labels=feature_names, values=normalized_values, hole=0.3)])
             
-            disclaimer()
+            st.markdown(f"### Factors Impacting Your Diagnosis:")
+            # Show pie chart
+            st.plotly_chart(fig_exp)
 
-    # Custom CSS to improve design
-    st.markdown("""
-    <style>
-        .stButton>button {
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 8px;
-            font-size: 16px;
-            padding: 8px 16px;
-            margin-top: 20px;
-        }
-        .stButton>button:hover {
-            background-color: #45a049;
-        }
-        .stMarkdown h4 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .stSlider {
-            margin-bottom: 20px;
-        }
-    </style>
-    """, unsafe_allow_html=True)
 
-if __name__ == '__main__':
+    disclaimer()
+
+if __name__ == "__main__":
     main()

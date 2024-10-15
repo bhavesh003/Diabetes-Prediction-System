@@ -210,7 +210,6 @@ def main():
             # Show pie chart
             st.plotly_chart(fig_exp)
 
-
     disclaimer()
 
 if __name__ == "__main__":

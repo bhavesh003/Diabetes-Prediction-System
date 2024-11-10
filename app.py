@@ -203,6 +203,8 @@ def main():
             # Normalize the values to be positive (since pie charts only show positive values)
             normalized_values = [abs(val) for val in feature_values]
 
+            st.markdown("---")
+    
             # Create pie chart for feature importance
             fig_exp = go.Figure(data=[go.Pie(labels=feature_names, values=normalized_values, hole=0.3)])
             

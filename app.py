@@ -140,16 +140,27 @@ def disclaimer():
 # Modify main function to include risk classification and personalized suggestions
 def main():
     # Set the page configuration (title, icon)
-    st.set_page_config(page_title="Diabetes Prediction App", page_icon="🩺", layout="centered")
+    st.set_page_config(page_title="Diabetes Risk Prediction App", page_icon="🩺", layout="centered")
 
     # Title and header
-    st.title('🩺 Diabetes Prediction Application')
+    st.title('🩺 Diabetes Risk Predictor')
 
     # Add banner or image for visual appeal
-    st.image("diabetes_banner.png", use_column_width=True)
+    from PIL import Image
+
+    # Open the image
+    image = Image.open("diabetes_banner.png")
+
+    # Resize the image
+    image = image.resize((800, 300))
+
+    # Display the resized image
+    st.image(image)
+
+
     st.markdown("---")
 
-    st.markdown("<h3 style='text-align: center;'>Provide the following details to predict diabetes</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center;'>Provide the following details to predict risk of diabetes</h3>", unsafe_allow_html=True)
 
     st.markdown("---")
 
@@ -161,12 +172,24 @@ def main():
         Glucose = st.slider("Select glucose level", min_value=0, max_value=300, step=1, key="glucose", help="Plasma glucose concentration a 2 hours in an oral glucose tolerance test.")
         BloodPressure = st.slider("Select blood pressure", min_value=0, max_value=200, step=1, key="blood_pressure", help="Diastolic blood pressure (mm Hg).")
         SkinThickness = st.slider("Select skin thickness", min_value=0, max_value=100, step=1, key="skin_thickness", help="Triceps skin fold thickness (mm).")
+        Age = st.slider("Select age", min_value=0, max_value=120, step=1, key="age", help="Age (years).")
 
     with col2:
         Insulin = st.slider("Select insulin level", min_value=0, max_value=900, step=1, key="insulin", help="2-Hour serum insulin (mu U/ml).")
-        BMI = st.slider("Select BMI", min_value=0.0, max_value=70.0, value=0.0, step=0.1, key="bmi", help="Body mass index (weight in kg/(height in m)^2).")
+        Weight = st.slider("Enter weight (kg)", min_value=0.0, max_value=200.0, step=0.1, key="weight", help="Weight of the patient in kilograms.")
+        Height = st.slider("Enter height (cm)", min_value=0.0, max_value=250.0, step=0.1, key="height", help="Height of the patient in centimeters.")
         DiabetesPedigreeFunction = st.slider("Select diabetes pedigree function", min_value=0.0, max_value=3.0, value=0.0, step=0.01, key="diabetes_pedigree", help="Diabetes pedigree function (a function which scores the likelihood of diabetes based on family history).")
-        Age = st.slider("Select age", min_value=0, max_value=120, step=1, key="age", help="Age (years).")
+
+    # Calculate BMI from height (cm) and weight (kg)
+    if Height > 0:  # Ensure height is not zero
+        height_in_meters = Height / 100  # Convert height from cm to meters
+        calculated_BMI = Weight / (height_in_meters ** 2)  # BMI formula
+    else:
+        st.error("Height cannot be zero.")  # Show error message if height is zero
+        calculated_BMI = 0  # Set BMI to zero or handle as needed
+
+    # Use the calculated BMI in your prediction model (store in the variable `BMI` that the model expects)
+    BMI = calculated_BMI
 
 
     # Prediction button and result display

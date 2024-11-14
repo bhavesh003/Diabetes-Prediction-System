@@ -149,10 +149,10 @@ def main():
     from PIL import Image
 
     # Open the image
-    image = Image.open("diabetes_banner.png")
+    image = Image.open("diabetes_banner.jpg")
 
     # Resize the image
-    image = image.resize((800, 300))
+    image = image.resize((700, 300))
 
     # Display the resized image
     st.image(image)
@@ -168,17 +168,17 @@ def main():
     col1, col2 = st.columns(2)
 
     with col1:
-        Pregnancies = st.slider("Select the number of pregnancies", min_value=0, max_value=20, step=1, key="pregnancies", help="Total number of pregnancies the patient has had.")
-        Glucose = st.slider("Select glucose level", min_value=0, max_value=300, step=1, key="glucose", help="Plasma glucose concentration a 2 hours in an oral glucose tolerance test.")
-        BloodPressure = st.slider("Select blood pressure", min_value=0, max_value=200, step=1, key="blood_pressure", help="Diastolic blood pressure (mm Hg).")
-        SkinThickness = st.slider("Select skin thickness", min_value=0, max_value=100, step=1, key="skin_thickness", help="Triceps skin fold thickness (mm).")
-        Age = st.slider("Select age", min_value=0, max_value=120, step=1, key="age", help="Age (years).")
+        Pregnancies = st.slider("Number of pregnancies", min_value=0, max_value=20, step=1, key="pregnancies", help="Total number of pregnancies the patient has had.")
+        Glucose = st.slider("Glucose level", min_value=0, max_value=300, step=1, key="glucose", help="Plasma glucose concentration a 2 hours in an oral glucose tolerance test.")
+        BloodPressure = st.slider("Blood pressure", min_value=0, max_value=200, step=1, key="blood_pressure", help="Diastolic blood pressure (mm Hg).")
+        SkinThickness = st.slider("Skin thickness", min_value=0, max_value=100, step=1, key="skin_thickness", help="Triceps skin fold thickness (mm).")
+        Age = st.slider("Age", min_value=0, max_value=120, step=1, key="age", help="Age (years).")
 
     with col2:
-        Insulin = st.slider("Select insulin level", min_value=0, max_value=900, step=1, key="insulin", help="2-Hour serum insulin (mu U/ml).")
-        Weight = st.slider("Enter weight (kg)", min_value=0.0, max_value=200.0, step=0.1, key="weight", help="Weight of the patient in kilograms.")
-        Height = st.slider("Enter height (cm)", min_value=0.0, max_value=250.0, step=0.1, key="height", help="Height of the patient in centimeters.")
-        DiabetesPedigreeFunction = st.slider("Select diabetes pedigree function", min_value=0.0, max_value=3.0, value=0.0, step=0.01, key="diabetes_pedigree", help="Diabetes pedigree function (a function which scores the likelihood of diabetes based on family history).")
+        Insulin = st.slider("Insulin level", min_value=0, max_value=900, step=1, key="insulin", help="2-Hour serum insulin (mu U/ml).")
+        Weight = st.slider("Weight (kg)", min_value=0.0, max_value=200.0, step=0.1, key="weight", help="Weight of the patient in kilograms.")
+        Height = st.slider("Height (cm)", min_value=0.0, max_value=250.0, step=0.1, key="height", help="Height of the patient in centimeters.")
+        DiabetesPedigreeFunction = st.slider("Diabetes pedigree function", min_value=0.0, max_value=3.0, value=0.0, step=0.01, key="diabetes_pedigree", help="Diabetes pedigree function (a function which scores the likelihood of diabetes based on family history).")
 
     # Calculate BMI from height (cm) and weight (kg)
     if Height > 0:  # Ensure height is not zero

@@ -10,7 +10,7 @@ from imblearn.over_sampling import SMOTE
 import pickle
 
 # Load the dataset
-data = pd.read_csv('diabetes.csv')
+data = pd.read_csv('diabetas.csv')
 
 # Define features and target variable
 X = data.drop(columns='Outcome', axis=1)
